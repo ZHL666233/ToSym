@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>💕 写给你的情书 💕</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ===== 加载动画 ===== -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-heart-container">
+            <div class="loading-heart">💕</div>
+            <div class="loading-text">正在为你准备惊喜...</div>
+            <div class="loading-dots">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 全局粒子背景 ===== -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- ===== 飘落花瓣/爱心 ===== -->
+    <div id="falling-elements"></div>
+
+    <!-- ===== 开场信封动画 ===== -->
+    <div id="envelope-overlay" class="overlay">
+        <div class="envelope-container">
+            <div class="envelope" id="envelope">
+                <div class="envelope-flap"></div>
+                <div class="envelope-body">
+                    <div class="heart-seal">
+                        <span>💌</span>
+                    </div>
+                    <div class="envelope-text">点击打开</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 情书展示（内容由 JS 从 config.js 读取并填充） ===== -->
+    <div id="letter-overlay" class="overlay hidden">
+        <div class="letter-container">
+            <div class="letter-paper">
+                <div class="letter-header">
+                    <span class="letter-emoji">🌹</span>
+                    <h2 id="letter-title">写给你的一封信</h2>
+                    <span class="letter-emoji">🌹</span>
+                </div>
+                <div class="letter-content" id="letter-content">
+                    <!-- 由 JS 从 config.js 生成 -->
+                </div>
+                <button class="letter-enter-btn" id="enter-btn">
+                    <span>我愿意，带我进入我们的世界 💕</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 主页面 ===== -->
+    <div id="main-page" class="main-page hidden">
+
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <div class="nav-logo" id="nav-logo">💕 我们的世界</div>
+            <div class="nav-links">
+                <a href="#home" class="nav-link active">首页</a>
+                <a href="#timer" class="nav-link">恋爱计时</a>
+                <a href="#love-words" class="nav-link">情话集</a>
+                <a href="#about-you" class="nav-link">关于你</a>
+                <a href="#gallery" class="nav-link">照片墙</a>
+                <a href="#moments" class="nav-link">美好瞬间</a>
+                <a href="#wishes" class="nav-link">星空许愿</a>
+                <a href="#love-diary" class="nav-link">爱心日历</a>
+                <a href="#messages" class="nav-link">留言板</a>
+            </div>
+            <button class="music-btn" id="music-btn" title="播放/暂停音乐">
+                <span class="music-icon">🎵</span>
+                <div class="music-bars">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+            </button>
+            <button class="reset-btn" id="reset-btn" title="重新观看信封动画">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                </svg>
+            </button>
+        </nav>
+
+        <!-- 首页 Hero -->
+        <section id="home" class="hero-section">
+            <div class="hero-content">
+                <div class="sparkle-text">
+                    <h1 class="hero-title">
+                        <span class="line">我</span>
+                        <span class="heart-beat">❤️</span>
+                        <span class="line">你</span>
+                    </h1>
+                </div>
+                <p class="hero-subtitle">从 <span class="highlight" id="hero-date">在一起的那天</span> 开始</p>
+                <p class="hero-subtitle">每一天都是因为你而特别的日子</p>
+                <div class="hero-love-meter">
+                    <div class="love-meter-fill" id="love-meter"></div>
+                    <span class="love-meter-text">爱你的进度：<span id="love-percent">100</span>%</span>
+                </div>
+            </div>
+            <div class="scroll-indicator">
+                <span>向下滑动</span>
+                <div class="scroll-arrow">▼</div>
+            </div>
+        </section>
+
+        <!-- 恋爱计时器 -->
+        <section id="timer" class="section timer-section">
+            <div class="section-content">
+                <h2 class="section-title">
+                    <span class="title-decoration">💕</span>
+                    我们在一起的每一天
+                    <span class="title-decoration">💕</span>
+                </h2>
+                <div class="date-setting">
+                    <label>在一起的日期：</label>
+                    <input type="date" id="together-date" class="date-input">
+                </div>
+                <div class="timer-display">
+                    <div class="timer-card">
+                        <div class="timer-number" id="timer-days">0</div>
+                        <div class="timer-label">天</div>
+                    </div>
+                    <div class="timer-card">
+                        <div class="timer-number" id="timer-hours">0</div>
+                        <div class="timer-label">时</div>
+                    </div>
+                    <div class="timer-card">
+                        <div class="timer-number" id="timer-minutes">0</div>
+                        <div class="timer-label">分</div>
+                    </div>
+                    <div class="timer-card">
+                        <div class="timer-number" id="timer-seconds">0</div>
+                        <div class="timer-label">秒</div>
+                    </div>
+                </div>
+                <p class="timer-sweet-text" id="timer-text">
+                    每一秒，都因为有你而珍贵 💕
+                </p>
+                <div class="milestones" id="milestones"></div>
+            </div>
+        </section>
+
+        <!-- 情话集 -->
+        <section id="love-words" class="section love-words-section">
+            <div class="section-content">
+                <h2 class="section-title">
+                    <span class="title-decoration">🌹</span>
+                    想对你说的话
+                    <span class="title-decoration">🌹</span>
+                </h2>
+                <div class="love-words-carousel">
+                    <div class="love-word-card" id="love-word-card">
+                        <div class="quote-mark">"</div>
+                        <p class="love-word-text" id="love-word-text">你是我生命中最美好的意外</p>
+                        <div class="quote-mark bottom">"</div>
+                    </div>
+                    <button class="carousel-btn prev" id="prev-word">💕</button>
+                    <button class="carousel-btn next" id="next-word">💕</button>
+                </div>
+                <div class="love-words-dots" id="love-words-dots"></div>
+                <button class="random-love-btn" id="random-love">
+                    ✨ 随机一句情话 ✨
+                </button>
+            </div>
+        </section>
+
+        <!-- 照片墙 -->
+        <section id="gallery" class="section gallery-section">
+            <div class="section-content">
+                <h2 class="section-title">
+                    <span class="title-decoration">📸</span>
+                    我们的合照
+                    <span class="title-decoration">📸</span>
+                </h2>
+                <p class="gallery-hint">把你们的合照放到 <code>photos/</code> 文件夹中（支持 jpg/png），即可自动展示</p>
+                <div class="gallery-grid" id="gallery-grid">
+                    <!-- 由 JS 动态生成 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 美好瞬间 / 时间线（内容由 JS 从 config.js 生成） -->
+        <section id="moments" class="section moments-section">
+            <div class="section-content">
+                <h2 class="section-title">
+                    <span class="title-decoration">⭐</span>
+                    美好瞬间
+                    <span class="title-decoration">⭐</span>
+                </h2>
+                <div class="timeline" id="timeline">
+                    <!-- 由 JS 从 config.js 生成 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 关于你 / 喜好记忆卡片（内容由 JS 从 config.js 生成） -->
+        <section id="about-you" class="section about-you-section">
+            <div class="section-content">
+                <h2 class="section-title">
+                    <span class="title-decoration">🎀</span>
+                    关于我最爱的你
+                    <span class="title-decoration">🎀</span>
+                </h2>
+                <p class="section-desc">你的一切我都记在心里 💕</p>
+                <div class="memory-cards" id="memory-cards">
+                    <!-- 由 JS 从 config.js 生成 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 星空许愿 -->
+        <section id="wishes" class="section wishes-section">
+            <div class="section-content">
+                <h2 class="section-title">
+                    <span class="title-decoration">🌟</span>
+                    我们的星空许愿墙
+                    <span class="title-decoration">🌟</span>
+                </h2>
+                <p class="section-desc">点击星星，写下我们的愿望 ✨</p>
+                <div class="wishes-sky" id="wishes-sky">
+                    <div class="wishes-input-area">
+                        <textarea id="wish-input" class="wish-input" placeholder="在这里写下你的愿望..." maxlength="50"></textarea>
+                        <button id="wish-submit" class="wish-btn">✨ 许下愿望</button>
+                    </div>
+                </div>
+                <div class="wishes-list" id="wishes-list"></div>
+            </div>
+        </section>
+
+        <!-- 爱心日历 -->
+        <section id="love-diary" class="section love-diary-section">
+            <div class="section-content">
+                <h2 class="section-title">
+                    <span class="title-decoration">📅</span>
+                    每一天的爱你
+                    <span class="title-decoration">📅</span>
+                </h2>
+                <p class="section-desc">每一天都在偷偷想你，点击打卡记录爱意 💗</p>
+                <div class="calendar-nav">
+                    <button id="cal-prev" class="cal-nav-btn">◀</button>
+                    <span id="cal-month" class="cal-month-label"></span>
+                    <button id="cal-next" class="cal-nav-btn">▶</button>
+                </div>
+                <div class="calendar" id="calendar">
+                    <div class="cal-header">
+                        <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+                    </div>
+                    <div class="cal-body" id="cal-body"></div>
+                </div>
+                <p class="cal-stats" id="cal-stats"></p>
+            </div>
+        </section>
+
+        <!-- 留言板 -->
+        <section id="messages" class="section messages-section">
+            <div class="section-content">
+                <h2 class="section-title">
+                    <span class="title-decoration">💌</span>
+                    恋爱心声
+                    <span class="title-decoration">💌</span>
+                </h2>
+                <p class="section-desc">写下想对你说的话 💝</p>
+                <div class="message-form">
+                    <input type="text" id="msg-author" class="msg-input" placeholder="你的名字" maxlength="20">
+                    <textarea id="msg-content" class="msg-textarea" placeholder="写下你想说的话..." maxlength="200"></textarea>
+                    <button id="msg-submit" class="msg-submit-btn">💌 传达心意</button>
+                </div>
+                <div class="messages-list" id="messages-list"></div>
+            </div>
+        </section>
+
+        <!-- 底部 -->
+        <footer class="footer">
+            <div class="footer-hearts">
+                <span>💕</span><span>💕</span><span>💕</span>
+            </div>
+            <p class="footer-text" id="footer-text">此网站只为你一人而作</p>
+            <p class="footer-text">因为你是我的全世界 🌍</p>
+            <div class="footer-beating-heart">
+                <span class="big-heart">💖</span>
+            </div>
+            <p class="footer-copy" id="footer-copy">Made with ❤️ by 你的名字</p>
+        </footer>
+    </div>
+
+    <!-- ===== 音乐播放器 ===== -->
+    <!-- 🎵 把你的 BGM 文件命名为 bgm.mp3 放到网站根目录即可 -->
+    <audio id="bgm" loop preload="auto">
+        <source src="bgm.mp3" type="audio/mpeg">
+        <source src="bgm.ogg" type="audio/ogg">
+    </audio>
+
+    <!-- 先加载配置，再加载主逻辑 -->
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
